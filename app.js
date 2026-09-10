@@ -60,7 +60,7 @@
   }
 
   const DEMO_STUDY = {
-    title: "Digital Onboarding study",
+    title: "Demo card sorting study",
     instructions:
       "This is demo data (config.js has no Apps Script URL yet).\n\nSort each feature into the category that best matches how you would prioritize it.",
     shuffleCards: "TRUE",
@@ -147,7 +147,7 @@
   }
 
   function normalizeStudy(raw) {
-    const title = "Digital Onboarding study";
+    const title = String(raw.title || "Card sorting study").trim();
     const instructions = String(
       raw.instructions ||
         "Sort each card into the category that fits best. Drag cards or tap them on mobile."
