@@ -14,7 +14,7 @@
  *
  * Tab: Study
  *   A          | B
- *   Title      | Navigation IA Card Sort
+ *   Title      | Digital Onboarding study
  *   Instructions | Please sort each item into the category that best matches how you think about it.
  *   ShuffleCards | TRUE
  *
@@ -108,7 +108,7 @@ function getStudy_() {
   ]);
 
   return {
-    title: studyMap.title || "Card Sorting Study",
+    title: studyMap.title || "Digital Onboarding study",
     instructions:
       studyMap.instructions ||
       "Sort each card into the category that fits best.",

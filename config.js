@@ -7,4 +7,5 @@
 window.CARD_SORT_CONFIG = {
   scriptUrl:
     "https://script.google.com/macros/s/AKfycbxK4GQBvQUNRRahkVNvIS-5amcJh0W9b7k2s9ejRFICdaL5L8hytLJ5QkteOHl1pS6Scw/exec",
+  studyTitle: "Digital Onboarding study",
 };

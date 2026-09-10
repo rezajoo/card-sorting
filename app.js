@@ -60,7 +60,7 @@
   }
 
   const DEMO_STUDY = {
-    title: "Demo: Feature priority card sort",
+    title: "Digital Onboarding study",
     instructions:
       "This is demo data (config.js has no Apps Script URL yet).\n\nSort each feature into the category that best matches how you would prioritize it.",
     shuffleCards: "TRUE",
@@ -147,7 +147,7 @@
   }
 
   function normalizeStudy(raw) {
-    const title = String(raw.title || "Card Sorting Study").trim();
+    const title = String(raw.title || "Digital Onboarding study").trim();
     const instructions = String(
       raw.instructions ||
         "Sort each card into the category that fits best. Drag cards or tap them on mobile."
@@ -552,6 +552,9 @@
         raw = await apiGetStudy();
       }
       state.study = normalizeStudy(raw);
+      if (config.studyTitle) {
+        state.study.title = String(config.studyTitle).trim();
+      }
       document.title = state.study.title;
       els.studyTitle.textContent = state.study.title;
       els.studyInstructions.textContent = state.study.instructions;

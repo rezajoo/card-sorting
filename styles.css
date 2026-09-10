@@ -58,17 +58,10 @@ body {
 .topbar {
   display: flex;
   align-items: baseline;
-  justify-content: space-between;
+  justify-content: flex-end;
   gap: 1rem;
   margin-bottom: 1.5rem;
-}
-
-.brand {
-  margin: 0;
-  font-family: var(--font-display);
-  font-size: 1.35rem;
-  font-weight: 700;
-  letter-spacing: -0.02em;
+  min-height: 1.5rem;
 }
 
 .progress {

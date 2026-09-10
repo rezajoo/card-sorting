@@ -19,7 +19,7 @@ In your personal Google account, create a spreadsheet with these tabs:
 
 | A | B |
 | --- | --- |
-| Title | Navigation IA Card Sort |
+| Title | Digital Onboarding study |
 | Instructions | Please sort each item into the category that best matches how you think about it. |
 | ShuffleCards | TRUE |
 
