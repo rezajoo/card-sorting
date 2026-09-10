@@ -147,7 +147,7 @@
   }
 
   function normalizeStudy(raw) {
-    const title = String(raw.title || "Digital Onboarding study").trim();
+    const title = "Digital Onboarding study";
     const instructions = String(
       raw.instructions ||
         "Sort each card into the category that fits best. Drag cards or tap them on mobile."
@@ -552,9 +552,6 @@
         raw = await apiGetStudy();
       }
       state.study = normalizeStudy(raw);
-      if (config.studyTitle) {
-        state.study.title = String(config.studyTitle).trim();
-      }
       document.title = state.study.title;
       els.studyTitle.textContent = state.study.title;
       els.studyInstructions.textContent = state.study.instructions;
