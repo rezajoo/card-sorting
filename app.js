@@ -9,6 +9,7 @@
     name: "",
     email: "",
     placements: {}, // cardId -> categoryId | null
+    order: [], // cardId display order (within each category / unsorted)
     selectedCardId: null,
     dragCardId: null,
   };
@@ -185,6 +186,7 @@
 
   function initPlacements() {
     state.placements = {};
+    state.order = state.study.cards.map((card) => card.id);
     state.study.cards.forEach((card) => {
       state.placements[card.id] = null;
     });
@@ -202,7 +204,40 @@
     return state.study.cards.find((c) => c.id === cardId);
   }
 
-  function createCardElement(card) {
+  function sameBucket(a, b) {
+    return (state.placements[a] || null) === (state.placements[b] || null);
+  }
+
+  function orderedCardsInBucket(categoryId) {
+    return state.order
+      .map((id) => getCard(id))
+      .filter((card) => {
+        if (!card) return false;
+        const placed = state.placements[card.id];
+        if (categoryId == null) return !placed;
+        return placed === categoryId;
+      });
+  }
+
+  function moveCard(cardId, direction) {
+    const bucketIds = state.order.filter((id) => sameBucket(id, cardId));
+    const index = bucketIds.indexOf(cardId);
+    if (index < 0) return;
+
+    const swapIndex = direction === "up" ? index - 1 : index + 1;
+    if (swapIndex < 0 || swapIndex >= bucketIds.length) return;
+
+    const otherId = bucketIds[swapIndex];
+    const iA = state.order.indexOf(cardId);
+    const iB = state.order.indexOf(otherId);
+    if (iA < 0 || iB < 0) return;
+
+    state.order[iA] = otherId;
+    state.order[iB] = cardId;
+    renderLists();
+  }
+
+  function createCardElement(card, position) {
     const el = document.createElement("article");
     el.className = "sort-card";
     el.draggable = true;
@@ -210,21 +245,71 @@
     el.setAttribute("role", "listitem");
     el.tabIndex = 0;
 
+    const body = document.createElement("div");
+    body.className = "card-body";
+
     const title = document.createElement("p");
     title.className = "card-title";
     title.textContent = card.label;
-    el.appendChild(title);
+    body.appendChild(title);
 
     if (card.description) {
       const desc = document.createElement("p");
       desc.className = "card-desc";
       desc.textContent = card.description;
-      el.appendChild(desc);
+      body.appendChild(desc);
     }
+
+    const controls = document.createElement("div");
+    controls.className = "card-controls";
+    controls.setAttribute("role", "group");
+    controls.setAttribute("aria-label", "Reorder card");
+
+    const upBtn = document.createElement("button");
+    upBtn.type = "button";
+    upBtn.className = "card-move";
+    upBtn.setAttribute("aria-label", `Move ${card.label} up`);
+    upBtn.title = "Move up";
+    upBtn.textContent = "↑";
+    upBtn.disabled = position.index === 0;
+
+    const downBtn = document.createElement("button");
+    downBtn.type = "button";
+    downBtn.className = "card-move";
+    downBtn.setAttribute("aria-label", `Move ${card.label} down`);
+    downBtn.title = "Move down";
+    downBtn.textContent = "↓";
+    downBtn.disabled = position.index >= position.total - 1;
+
+    function stopCardGesture(event) {
+      event.stopPropagation();
+    }
+
+    [upBtn, downBtn].forEach((btn) => {
+      btn.addEventListener("mousedown", stopCardGesture);
+      btn.addEventListener("pointerdown", stopCardGesture);
+      btn.addEventListener("touchstart", stopCardGesture, { passive: true });
+      btn.addEventListener("click", stopCardGesture);
+    });
+
+    upBtn.addEventListener("click", (event) => {
+      event.preventDefault();
+      moveCard(card.id, "up");
+    });
+    downBtn.addEventListener("click", (event) => {
+      event.preventDefault();
+      moveCard(card.id, "down");
+    });
+
+    controls.append(upBtn, downBtn);
+    el.append(body, controls);
 
     el.addEventListener("dragstart", onDragStart);
     el.addEventListener("dragend", onDragEnd);
-    el.addEventListener("click", () => openPicker(card.id));
+    el.addEventListener("click", (event) => {
+      if (event.target.closest(".card-controls")) return;
+      openPicker(card.id);
+    });
     el.addEventListener("keydown", (event) => {
       if (event.key === "Enter" || event.key === " ") {
         event.preventDefault();
@@ -242,7 +327,9 @@
     });
     const unsorted = [];
 
-    state.study.cards.forEach((card) => {
+    state.order.forEach((cardId) => {
+      const card = getCard(cardId);
+      if (!card) return;
       const catId = state.placements[card.id];
       if (catId && byCategory[catId]) {
         byCategory[catId].push(card);
@@ -280,7 +367,11 @@
       container.appendChild(empty);
       return;
     }
-    cards.forEach((card) => container.appendChild(createCardElement(card)));
+    cards.forEach((card, index) =>
+      container.appendChild(
+        createCardElement(card, { index, total: cards.length })
+      )
+    );
   }
 
   function buildCategories() {
@@ -403,9 +494,7 @@
   function renderReview() {
     els.reviewSummary.innerHTML = "";
     state.study.categories.forEach((cat) => {
-      const cards = state.study.cards.filter(
-        (card) => state.placements[card.id] === cat.id
-      );
+      const cards = orderedCardsInBucket(cat.id);
       const group = document.createElement("div");
       group.className = "review-group";
       const heading = document.createElement("h3");
@@ -428,16 +517,20 @@
   }
 
   function buildSubmissionPayload() {
-    const results = state.study.cards.map((card) => {
-      const categoryId = state.placements[card.id];
-      const category = state.study.categories.find((c) => c.id === categoryId);
-      return {
-        cardId: card.id,
-        cardLabel: card.label,
-        categoryId: categoryId || "",
-        categoryLabel: category ? category.label : "",
-      };
-    });
+    const results = state.order
+      .map((cardId) => getCard(cardId))
+      .filter(Boolean)
+      .map((card, index) => {
+        const categoryId = state.placements[card.id];
+        const category = state.study.categories.find((c) => c.id === categoryId);
+        return {
+          cardId: card.id,
+          cardLabel: card.label,
+          categoryId: categoryId || "",
+          categoryLabel: category ? category.label : "",
+          sortOrder: index + 1,
+        };
+      });
 
     return {
       name: state.name,

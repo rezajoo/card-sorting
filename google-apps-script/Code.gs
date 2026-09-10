@@ -39,6 +39,25 @@ var CATEGORIES_SHEET = "Categories";
 var CARDS_SHEET = "Cards";
 var RESPONSES_SHEET = "Responses";
 
+/**
+ * Run this once from the Apps Script editor to grant permissions.
+ * 1. Select authorizeStudy in the function dropdown (next to Run)
+ * 2. Click Run
+ * 3. Review permissions → Allow
+ *    If you see "Google hasn't verified this app":
+ *    Advanced → Go to <project name> (unsafe) → Allow
+ */
+function authorizeStudy() {
+  var study = getStudy_();
+  Logger.log("Authorized. Loaded study: " + study.title);
+  Logger.log(
+    "Categories: " +
+      study.categories.length +
+      ", Cards: " +
+      study.cards.length
+  );
+}
+
 function doGet(e) {
   try {
     var action = (e && e.parameter && e.parameter.action) || "getStudy";

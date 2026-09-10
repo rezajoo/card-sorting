@@ -46,12 +46,22 @@ In your personal Google account, create a spreadsheet with these tabs:
 1. Open the sheet → **Extensions → Apps Script**
 2. Replace any default code with the contents of [`google-apps-script/Code.gs`](google-apps-script/Code.gs)
 3. Click **Save**
-4. **Deploy → New deployment → Web app**
+4. **Authorize first (important)** — don’t deploy until this succeeds:
+   - In the toolbar, choose function **`authorizeStudy`**
+   - Click **Run**
+   - Click **Review permissions** → pick your Google account
+   - If you see **“Google hasn’t verified this app”**:
+     - Click **Advanced**
+     - Click **Go to \<project name\> (unsafe)**
+     - Click **Allow**
+   - Run again; Execution log should show the study title, category count, and card count
+5. **Deploy → New deployment → Web app**
    - Description: `card-sort-api`
    - Execute as: **Me**
    - Who has access: **Anyone**
-5. Authorize access when prompted
 6. Copy the **Web app URL** (ends with `/exec`)
+
+If you still get *“This project requires access to your Google Account…”*, you denied access or closed the dialog early — run `authorizeStudy` again and complete **Allow**. Make sure you’re signed into the same Gmail that owns the spreadsheet.
 
 ### 3. Point the form at your script
 

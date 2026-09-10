@@ -5,5 +5,6 @@
  * Setup steps are in README.md and google-apps-script/SETUP.md
  */
 window.CARD_SORT_CONFIG = {
-  scriptUrl: "PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE",
+  scriptUrl:
+    "https://script.google.com/macros/s/AKfycbxK4GQBvQUNRRahkVNvIS-5amcJh0W9b7k2s9ejRFICdaL5L8hytLJ5QkteOHl1pS6Scw/exec",
 };
