@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Card Sorting Study</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Outfit:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="bg-glow" aria-hidden="true"></div>
+
+    <main class="app">
+      <header class="topbar">
+        <p class="brand">Card Sort</p>
+        <p class="progress" id="progressLabel" hidden></p>
+      </header>
+
+      <!-- Loading -->
+      <section class="panel" id="loadingPanel" aria-live="polite">
+        <div class="spinner" aria-hidden="true"></div>
+        <h1>Loading study…</h1>
+        <p class="muted">Pulling cards and categories from your Google Sheet.</p>
+      </section>
+
+      <!-- Error -->
+      <section class="panel" id="errorPanel" hidden>
+        <h1>Couldn’t load the study</h1>
+        <p class="muted" id="errorMessage"></p>
+        <button type="button" class="btn btn-primary" id="retryBtn">Try again</button>
+      </section>
+
+      <!-- Intro / participant info -->
+      <section class="panel panel-wide" id="introPanel" hidden>
+        <p class="eyebrow">UX research study</p>
+        <h1 id="studyTitle">Card Sorting</h1>
+        <p class="lede" id="studyInstructions"></p>
+
+        <form id="participantForm" class="participant-form" novalidate>
+          <div class="field-grid">
+            <label class="field">
+              <span>Your name</span>
+              <input
+                type="text"
+                id="participantName"
+                name="name"
+                autocomplete="name"
+                required
+                placeholder="Alex Rivera"
+              />
+            </label>
+            <label class="field">
+              <span>Email</span>
+              <input
+                type="email"
+                id="participantEmail"
+                name="email"
+                autocomplete="email"
+                required
+                placeholder="alex@example.com"
+              />
+            </label>
+          </div>
+          <p class="form-error" id="participantError" hidden></p>
+          <button type="submit" class="btn btn-primary">Start sorting</button>
+        </form>
+      </section>
+
+      <!-- Sorting workspace -->
+      <section id="sortPanel" hidden>
+        <div class="sort-layout">
+          <aside class="deck" aria-labelledby="deckHeading">
+            <div class="deck-header">
+              <h2 id="deckHeading">Unsorted cards</h2>
+              <span class="count-pill" id="unsortedCount">0</span>
+            </div>
+            <p class="hint">Drag a card into a category, or tap a card then choose a category.</p>
+            <div class="card-list" id="unsortedList" role="list"></div>
+          </aside>
+
+          <div class="categories" id="categoriesGrid" role="list"></div>
+        </div>
+
+        <footer class="sort-footer">
+          <p class="footer-status" id="sortStatus">Sort every card to continue.</p>
+          <button type="button" class="btn btn-primary" id="reviewBtn" disabled>
+            Review &amp; submit
+          </button>
+        </footer>
+      </section>
+
+      <!-- Review -->
+      <section class="panel panel-wide" id="reviewPanel" hidden>
+        <h1>Review your sort</h1>
+        <p class="muted">Confirm your placements, then submit your results.</p>
+        <div id="reviewSummary" class="review-summary"></div>
+        <div class="actions-row">
+          <button type="button" class="btn btn-ghost" id="backToSortBtn">Back to sorting</button>
+          <button type="button" class="btn btn-primary" id="submitBtn">Submit results</button>
+        </div>
+        <p class="form-error" id="submitError" hidden></p>
+      </section>
+
+      <!-- Success -->
+      <section class="panel" id="successPanel" hidden>
+        <div class="success-mark" aria-hidden="true">✓</div>
+        <h1>Thank you</h1>
+        <p class="muted" id="successMessage">
+          Your card sort was saved. You can close this page.
+        </p>
+      </section>
+    </main>
+
+    <!-- Mobile category picker -->
+    <div class="sheet-overlay" id="pickerOverlay" hidden>
+      <div
+        class="sheet"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="pickerTitle"
+        id="pickerSheet"
+      >
+        <h2 id="pickerTitle">Move card to…</h2>
+        <p class="muted" id="pickerCardLabel"></p>
+        <div class="picker-options" id="pickerOptions"></div>
+        <button type="button" class="btn btn-ghost full" id="pickerCancel">Cancel</button>
+      </div>
+    </div>
+
+    <script src="config.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
